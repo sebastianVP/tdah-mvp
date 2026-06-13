@@ -1,0 +1,7 @@
+services:
+  tdah-app:
+    build: .
+    container_name: tdah-mvp
+    ports:
+      - "8501:8501"
+    restart: unless-stopped

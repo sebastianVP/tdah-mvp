@@ -1,16 +1,31 @@
+import sys
 import streamlit as st
+from pathlib import Path
 
-st.title("Parte 1")
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+from services.questions import QUESTIONS
 
-respuesta = st.radio(
-    "¿Con qué frecuencia tiene dificultad para terminar tareas?",
-    [
-        "Nunca",
-        "Rara vez",
-        "Algunas veces",
-        "Frecuentemente",
-        "Muy frecuentemente"
-    ]
-)
+st.title("Evaluación Preliminar TDAH")
 
-st.write("Respuesta:", respuesta)
+responses = []
+
+options = [
+    "Nunca",
+    "Rara vez",
+    "Algunas veces",
+    "Frecuentemente",
+    "Muy frecuentemente"
+]
+
+for i, question in enumerate(QUESTIONS):
+    answer = st.radio(
+        question,
+        options,
+        key=f"q{i}"
+    )
+    responses.append(answer)
+
+if st.button("Finalizar Evaluación"):
+    st.session_state["responses"] = responses
+    st.switch_page("pages/02_resultado.py")
