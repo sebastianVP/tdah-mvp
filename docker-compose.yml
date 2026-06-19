@@ -4,4 +4,36 @@ services:
     container_name: tdah-mvp
     ports:
       - "8501:8501"
+
+    
+    depends_on:
+      - tdah-db
+
+    environment:
+      DATABASE_URL: postgresql://admin:admin123@tdah-db:5432/tdah
+    
     restart: unless-stopped
+
+  tdah-db:
+      image: postgres:17
+
+      container_name: tdah-db
+
+      environment:
+        POSTGRES_DB: tdah
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: admin123
+
+      ports:
+        - "5435:5432"
+
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+      restart: unless-stopped
+
+volumes:
+    postgres_data:
+  
+  
+  

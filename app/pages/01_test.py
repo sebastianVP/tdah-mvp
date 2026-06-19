@@ -2,9 +2,9 @@ import sys
 import streamlit as st
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.append(str(ROOT))
-from services.questions import QUESTIONS
+#ROOT = Path(__file__).resolve().parents[2]
+#sys.path.append(str(ROOT))
+from app.services.questions import QUESTIONS
 
 st.title("Evaluación Preliminar TDAH")
 
