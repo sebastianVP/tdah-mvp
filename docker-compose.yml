@@ -10,7 +10,7 @@ services:
       - tdah-db
 
     environment:
-      DATABASE_URL: postgresql://admin:admin123@tdah-db:5432/tdah
+      DATABASE_URL: postgresql+psycopg://admin:admin123@tdah-db:5432/tdah
     
     restart: unless-stopped
 
