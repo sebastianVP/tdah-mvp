@@ -19,3 +19,8 @@ utilizados internacionalmente.
 
 if st.button("Comenzar Evaluación"):
     st.switch_page("pages/00_registro.py")
+
+if st.button("Dashboard Administrativo"):
+    st.switch_page(
+        "pages/03_dashboard.py"
+    )
