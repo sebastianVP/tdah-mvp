@@ -18,4 +18,4 @@ utilizados internacionalmente.
 """)
 
 if st.button("Comenzar Evaluación"):
-    st.switch_page("pages/01_test.py")
+    st.switch_page("pages/00_registro.py")
