@@ -33,12 +33,12 @@ st.markdown("""
     [data-testid="stExpandSidebarButton"]:hover,
     [data-testid="stSidebarCollapseButton"]:hover { opacity: 0.9 !important; color: #A29BFE !important; }
 
-    /* ── Card ─────────────────────────────────────────────── */
-    .register-card {
+    /* ── Card — apunta al bloque principal de Streamlit ──── */
+    [data-testid="stAppViewBlockContainer"] > div:first-child {
         background: rgba(255,255,255,0.025);
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 28px;
-        padding: 2.5rem 2.25rem 2rem;
+        padding: 2.5rem 2.25rem 2rem !important;
         margin-top: 1rem;
     }
 
@@ -82,7 +82,7 @@ st.markdown("""
 
     /* ── Text inputs ──────────────────────────────────────── */
     input[type="text"], input[type="email"], input[type="number"] {
-        background: rgba(255,255,255,0.05) !important;
+        background: #1A1F2E !important;
         border: 1.5px solid rgba(255,255,255,0.1) !important;
         border-radius: 12px !important;
         color: #FFFFFF !important;
@@ -98,9 +98,44 @@ st.markdown("""
     }
     input::placeholder { color: rgba(255,255,255,0.25) !important; }
 
+    /* ── Eliminar borde rojo de BaseWeb (contenedor nativo de Streamlit) ── */
+    [data-baseweb="input"],
+    [data-baseweb="base-input"],
+    [data-baseweb="textarea"],
+    [data-baseweb="select"] {
+        border-color: rgba(255,255,255,0.1) !important;
+        background-color: #1A1F2E !important;
+    }
+    [data-baseweb="input"]:focus-within,
+    [data-baseweb="base-input"]:focus-within,
+    [data-baseweb="select"]:focus-within {
+        border-color: rgba(108,92,231,0.6) !important;
+        box-shadow: 0 0 0 3px rgba(108,92,231,0.1) !important;
+    }
+    /* Fuerza el borde en todos los estados posibles de BaseWeb */
+    [data-baseweb="input"] > div,
+    [data-baseweb="base-input"] > div {
+        border-color: rgba(255,255,255,0.1) !important;
+        background-color: #1A1F2E !important;
+        border-radius: 12px !important;
+    }
+
+    /* ── Autofill fix — evita el fondo blanco del navegador── */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 999px #1A1F2E inset !important;
+        box-shadow: 0 0 0 999px #1A1F2E inset !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+        caret-color: #FFFFFF !important;
+        border: 1.5px solid rgba(255,255,255,0.1) !important;
+        border-radius: 12px !important;
+    }
+
     /* ── Selectbox ────────────────────────────────────────── */
     [data-testid="stSelectbox"] > div > div {
-        background: rgba(255,255,255,0.05) !important;
+        background: #1A1F2E !important;
         border: 1.5px solid rgba(255,255,255,0.1) !important;
         border-radius: 12px !important;
         color: #FFFFFF !important;
@@ -196,9 +231,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Card ───────────────────────────────────────────────────────────────────────
-# st.markdown('<div class="register-card">', unsafe_allow_html=True)
-
 st.markdown('<h2 class="register-title">Antes de comenzar</h2>', unsafe_allow_html=True)
 st.markdown(
     '<p class="register-subtitle">Ingresa tus datos para calibrar los parámetros de la evaluación.<br>'
@@ -250,5 +282,3 @@ if st.button("Continuar con la evaluación →"):
         st.session_state["age"]    = age
         st.session_state["gender"] = gender
         st.switch_page("pages/01_test.py")
-
-st.markdown('</div>', unsafe_allow_html=True)

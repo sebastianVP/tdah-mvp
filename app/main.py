@@ -7,6 +7,12 @@ def get_image_base64(path):
         return base64.b64encode(image_file.read()).decode()
 
 img_path = Path(__file__).parent / "assets" / "hero_image.png"
+# ── Limpiar estado de evaluaciones anteriores al llegar al inicio ──────────────
+# Esto garantiza que una nueva evaluación siempre se guarde en BD
+for key in ["evaluation_saved", "evaluation_id", "score", "risk",
+            "responses", "name", "email", "age", "gender",
+            "current_index", "answers_map"]:
+    st.session_state.pop(key, None)
 
 st.set_page_config(
     page_title="MindAlert - Evaluación TDAH",
