@@ -10,6 +10,14 @@ def save_participant(
     db = SessionLocal()
     
     try:
+        # 1. Buscar si ya existe
+        existing = db.query(Participant).filter(
+            Participant.email == email
+        ).first()
+
+        if existing:
+            return existing.id  # reutiliza el usuario
+
         participant= Participant(
             full_name = full_name,
             email     = email,
