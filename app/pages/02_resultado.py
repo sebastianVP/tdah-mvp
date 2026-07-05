@@ -37,16 +37,7 @@ st.markdown("""
     [data-testid="stExpandSidebarButton"]:hover,
     [data-testid="stSidebarCollapseButton"]:hover { opacity: 0.9 !important; color: #A29BFE !important; }
 
-    /* ── Main card ────────────────────────────────────────── */
-    .result-card {
-        background: rgba(255,255,255,0.025);
-        border: 1px solid rgba(255,255,255,0.07);
-        border-radius: 28px;
-        padding: 2.5rem 2.25rem 2rem;
-        margin-top: 1rem;
-    }
-
-    /* ── Score ring container ─────────────────────────────── */
+    /* ── Score hero ───────────────────────────────────────── */
     .score-hero {
         display: flex;
         flex-direction: column;
@@ -79,9 +70,9 @@ st.markdown("""
     }
 
     /* ── Risk colors ──────────────────────────────────────── */
-    .risk-bajo    { background: rgba(29,158,117,0.18); color: #5DCAA5; border: 1px solid rgba(29,158,117,0.35); }
+    .risk-bajo     { background: rgba(29,158,117,0.18); color: #5DCAA5; border: 1px solid rgba(29,158,117,0.35); }
     .risk-moderado { background: rgba(186,117,23,0.18); color: #FAC775; border: 1px solid rgba(186,117,23,0.35); }
-    .risk-alto    { background: rgba(226,75,74,0.18);  color: #F09595; border: 1px solid rgba(226,75,74,0.35); }
+    .risk-alto     { background: rgba(226,75,74,0.18);  color: #F09595; border: 1px solid rgba(226,75,74,0.35); }
 
     /* ── Divider ──────────────────────────────────────────── */
     .soft-divider {
@@ -101,7 +92,7 @@ st.markdown("""
         line-height: 1.6;
     }
 
-    /* ── Eval ID caption ──────────────────────────────────── */
+    /* ── Eval ID ──────────────────────────────────────────── */
     .eval-id {
         text-align: center;
         font-size: 0.75rem;
@@ -110,7 +101,7 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
 
-    /* ── Expander overrides ───────────────────────────────── */
+    /* ── Expander ─────────────────────────────────────────── */
     details {
         background: rgba(255,255,255,0.02) !important;
         border: 1px solid rgba(255,255,255,0.07) !important;
@@ -146,6 +137,45 @@ st.markdown("""
         background: rgba(108,92,231,0.12);
         color: #A29BFE;
     }
+
+    /* ── Todos los botones base ───────────────────────────── */
+    div[data-testid="stButton"] > button {
+        border-radius: 14px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        font-family: 'Inter', sans-serif !important;
+        padding: 0.75rem 1rem !important;
+        width: 100% !important;
+        transition: all 0.2s ease !important;
+        letter-spacing: 0.2px !important;
+    }
+
+    /* ── Botón primario (Nueva evaluación — primer botón) ── */
+    div[data-testid="stHorizontalBlock"] > div:first-child div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, #5A4FCF 0%, #8B7FE8 100%) !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: 0 4px 20px rgba(108,92,231,0.35) !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:first-child div[data-testid="stButton"] > button:hover {
+        box-shadow: 0 6px 28px rgba(108,92,231,0.55) !important;
+    }
+
+    /* ── Botón secundario (Volver al inicio — segundo botón) */
+    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button {
+        background: transparent !important;
+        color: rgba(255,255,255,0.6) !important;
+        border: 1.5px solid rgba(255,255,255,0.15) !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stButton"] > button:hover {
+        color: #FFFFFF !important;
+        border-color: rgba(255,255,255,0.35) !important;
+        background: rgba(255,255,255,0.04) !important;
+    }
+
+    /* ── Column gap ───────────────────────────────────────── */
+    [data-testid="stHorizontalBlock"] { gap: 1rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -179,7 +209,7 @@ else:
     risk_desc = "Te recomendamos hablar con un especialista pronto."
 
 st.session_state["score"] = score
-st.session_state["risk"] = risk
+st.session_state["risk"]  = risk
 
 # ── Save evaluation once ───────────────────────────────────────────────────────
 if "evaluation_saved" not in st.session_state:
@@ -196,7 +226,7 @@ if "evaluation_saved" not in st.session_state:
         responses=responses,
     )
     st.session_state["evaluation_saved"] = True
-    st.session_state["evaluation_id"] = evaluation_id
+    st.session_state["evaluation_id"]    = evaluation_id
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
@@ -206,53 +236,49 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Main card ──────────────────────────────────────────────────────────────────
-st.markdown('<div class="result-card">', unsafe_allow_html=True)
-
-# Greeting
-name = st.session_state.get("name", "").split()[0]
+# ── Greeting ───────────────────────────────────────────────────────────────────
 st.markdown(
     f"<p style='text-align:center; font-size:0.85rem; font-weight:600; "
-    f"text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35); margin-bottom:0;'>"
+    f"text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35); margin-bottom:0; margin-top:1rem;'>"
     f"Resultados de</p>"
     f"<p style='text-align:center; font-size:1.3rem; font-weight:700; color:#FFFFFF; margin:0.15rem 0 0;'>"
     f"{st.session_state.get('name', 'Participante')}</p>",
     unsafe_allow_html=True,
 )
 
-# Score hero
+# ── Score hero ─────────────────────────────────────────────────────────────────
+score_color = '#5DCAA5' if risk == 'Bajo' else '#FAC775' if risk == 'Moderado' else '#F09595'
 st.markdown(
     f"""<div class="score-hero">
-        <span class="score-number" style="color: {'#5DCAA5' if risk == 'Bajo' else '#FAC775' if risk == 'Moderado' else '#F09595'};">{score}</span>
+        <span class="score-number" style="color:{score_color};">{score}</span>
         <span class="score-label">puntos obtenidos</span>
         <span class="risk-badge {risk_class}">{risk_emoji} &nbsp; Riesgo {risk}</span>
     </div>""",
     unsafe_allow_html=True,
 )
 
-# Risk description
-st.markdown(f"<p style='text-align:center; font-size:0.92rem; color:rgba(255,255,255,0.55); margin: 0 0 1.5rem;'>{risk_desc}</p>", unsafe_allow_html=True)
+st.markdown(
+    f"<p style='text-align:center; font-size:0.92rem; color:rgba(255,255,255,0.55); margin: 0 0 1.5rem;'>"
+    f"{risk_desc}</p>",
+    unsafe_allow_html=True,
+)
 
 st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
 
-# Score scale visual
-max_score = 24  # adjust to your actual max
+# ── Score scale ────────────────────────────────────────────────────────────────
+max_score = 24
 pct = min(score / max_score * 100, 100)
-if risk == "Bajo":
-    bar_color = "#5DCAA5"
-elif risk == "Moderado":
-    bar_color = "#FAC775"
-else:
-    bar_color = "#F09595"
 
 st.markdown(
     f"""<div style="margin: 0.5rem 0 1.5rem;">
         <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-            <span style="font-size:0.75rem; color:rgba(255,255,255,0.35); font-weight:600; text-transform:uppercase; letter-spacing:1px;">Escala de riesgo</span>
+            <span style="font-size:0.75rem; color:rgba(255,255,255,0.35); font-weight:600;
+                         text-transform:uppercase; letter-spacing:1px;">Escala de riesgo</span>
             <span style="font-size:0.75rem; color:rgba(255,255,255,0.35);">{score} / {max_score}</span>
         </div>
         <div style="height:8px; background:rgba(255,255,255,0.07); border-radius:99px; overflow:hidden;">
-            <div style="height:100%; width:{pct:.1f}%; background:{bar_color}; border-radius:99px; transition: width 0.8s ease;"></div>
+            <div style="height:100%; width:{pct:.1f}%; background:{score_color};
+                        border-radius:99px;"></div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:0.35rem;">
             <span style="font-size:0.7rem; color:rgba(255,255,255,0.25);">Bajo</span>
@@ -265,27 +291,49 @@ st.markdown(
 
 st.markdown('<hr class="soft-divider">', unsafe_allow_html=True)
 
-# Disclaimer notice
+# ── Disclaimer ─────────────────────────────────────────────────────────────────
 st.markdown(
     '<div class="notice-box">⚠️&nbsp; Este resultado es <strong>únicamente orientativo</strong> '
     'y no constituye un diagnóstico médico. Si tienes dudas, consulta con un profesional de la salud mental.</div>',
     unsafe_allow_html=True,
 )
 
-# Eval ID
 if "evaluation_id" in st.session_state:
     st.markdown(
         f'<p class="eval-id">Evaluación #{st.session_state["evaluation_id"]} registrada correctamente</p>',
         unsafe_allow_html=True,
     )
 
-st.markdown('</div>', unsafe_allow_html=True)  # close .result-card
+# ── Mensaje motivacional ───────────────────────────────────────────────────────
+st.markdown(
+    "<div style='text-align:center; margin-top:1.5rem; margin-bottom:0.5rem; "
+    "color:rgba(255,255,255,0.3); font-size:0.85rem; line-height:1.7;'>"
+    "Comprender tu atención es el primer paso para mejorar tu bienestar.<br>"
+    "Gracias por utilizar <strong style='color:rgba(255,255,255,0.5);'>MindAlert</strong>."
+    "</div>",
+    unsafe_allow_html=True,
+)
 
-# ── Responses expander ─────────────────────────────────────────────────────────
+# ── Botones de acción ──────────────────────────────────────────────────────────
+st.markdown("<br>", unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Nueva evaluacion", key="btn_nueva", use_container_width=True):
+        for key in ["responses", "score", "risk", "evaluation_saved", "evaluation_id",
+                    "name", "email", "age", "gender", "current_index", "answers_map"]:
+            st.session_state.pop(key, None)
+        st.switch_page("pages/00_registro.py")
+
+with col2:
+    if st.button("Volver al inicio", key="btn_inicio", use_container_width=True):
+        st.session_state.clear()
+        st.switch_page("main.py")
+
+# ── Expander de respuestas ─────────────────────────────────────────────────────
 with st.expander("Ver respuestas registradas"):
     from app.services.questions import QUESTIONS
     for i, (question, response) in enumerate(zip(QUESTIONS, responses), start=1):
-        # Shorten question for display
         short_q = question if len(question) <= 60 else question[:57] + "…"
         st.markdown(
             f'<div class="response-row">'
