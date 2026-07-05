@@ -4,6 +4,8 @@ from app.services.scoring import calculate_score
 from app.services.evaluation_service import save_evaluation
 from app.services.participant_service import save_participant
 
+from app.services.email_service import send_result_email
+
 st.set_page_config(
     page_title="Resultado - MindAlert",
     page_icon="🧠",
@@ -225,8 +227,16 @@ if "evaluation_saved" not in st.session_state:
         risk_level=risk,
         responses=responses,
     )
+
+    send_result_email(
+    recipient=st.session_state["email"],
+    score=score,
+    risk=risk
+    )
     st.session_state["evaluation_saved"] = True
+    st.session_state["email_sent"] = True
     st.session_state["evaluation_id"]    = evaluation_id
+
 
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown(
@@ -297,6 +307,15 @@ st.markdown(
     'y no constituye un diagnóstico médico. Si tienes dudas, consulta con un profesional de la salud mental.</div>',
     unsafe_allow_html=True,
 )
+
+# ── Confirmación de envío de correo ────────────────────────────────────────────
+
+if st.session_state.get("email_sent", False):
+
+    st.success(
+        "📧 Tu reporte ha sido enviado correctamente al correo registrado. "
+        "Si no lo encuentras en tu bandeja de entrada, revisa también la carpeta de spam o correo no deseado."
+    )
 
 if "evaluation_id" in st.session_state:
     st.markdown(
