@@ -1,10 +1,11 @@
 import streamlit as st
-
+import os
 from app.services.scoring import calculate_score
 from app.services.evaluation_service import save_evaluation
 from app.services.participant_service import save_participant
 
 from app.services.email_service import send_result_email
+from app.services.pdf_service import generate_pdf
 
 st.set_page_config(
     page_title="Resultado - MindAlert",
@@ -152,6 +153,33 @@ st.markdown("""
         letter-spacing: 0.2px !important;
     }
 
+    /* ── NUEVA SECCIÓN: Estilo Estético para el Botón de Descarga PDF ── */
+    div[data-testid="stDownloadButton"] > button {
+        border-radius: 14px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        font-family: 'Inter', sans-serif !important;
+        padding: 0.75rem 1rem !important;
+        width: 100% !important;
+        transition: all 0.2s ease !important;
+        letter-spacing: 0.2px !important;
+        
+        /* Diseño Cyberpunk/Oscuro unificado con el ecosistema */
+        background: rgba(108, 92, 231, 0.15) !important;
+        color: #A29BFE !important;
+        border: 1.5px solid rgba(108, 92, 231, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(108, 92, 231, 0.1) !important;
+    }
+    div[data-testid="stDownloadButton"] > button:hover {
+        background: rgba(108, 92, 231, 0.25) !important;
+        color: #FFFFFF !important;
+        border-color: rgba(108, 92, 231, 0.7) !important;
+        box-shadow: 0 6px 22px rgba(108, 92, 231, 0.25) !important;
+    }
+    div[data-testid="stDownloadButton"] > button:active {
+        background: rgba(108, 92, 231, 0.35) !important;
+    }
+            
     /* ── Botón primario (Nueva evaluación — primer botón) ── */
     div[data-testid="stHorizontalBlock"] > div:first-child div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #5A4FCF 0%, #8B7FE8 100%) !important;
@@ -228,10 +256,43 @@ if "evaluation_saved" not in st.session_state:
         responses=responses,
     )
 
+    # -------------------------------------------------------
+    # Generar Reporte PDF
+    # -------------------------------------------------------
+
+    pdf_path = generate_pdf(
+
+        filename=f"report_{evaluation_id}.pdf",
+
+        participant=st.session_state["name"],
+
+        email=st.session_state["email"],
+
+        age=st.session_state["age"],
+
+        gender=st.session_state["gender"],
+
+        score=score,
+
+        risk=risk,
+
+        evaluation_id=evaluation_id
+
+    )
+
+    st.session_state["pdf_path"] = pdf_path
+    #print("pdf_path:", pdf_path)
+    # -------------------------------------------------------
+    # Enviar correo
+    # -------------------------------------------------------
+
+
     send_result_email(
     recipient=st.session_state["email"],
     score=score,
-    risk=risk
+    risk=risk,
+    pdf_path=pdf_path,
+    evaluation_id=evaluation_id
     )
     st.session_state["evaluation_saved"] = True
     st.session_state["email_sent"] = True
@@ -323,6 +384,21 @@ if "evaluation_id" in st.session_state:
         unsafe_allow_html=True,
     )
 
+# ── Descargar Reporte PDF (CORREGIDA INDENTACIÓN EXTRASECCIÓN) ─────────────────
+# Sacamos este bloque de la condicional anidada para asegurar que Streamlit lo dibuje siempre 
+# que la ruta del PDF exista físicamente en el servidor.
+if "pdf_path" in st.session_state and os.path.exists(st.session_state["pdf_path"]):
+    with open(st.session_state["pdf_path"], "rb") as pdf_file:
+        st.download_button(
+            label="📄 Descargar Reporte PDF",
+            data=pdf_file,
+            file_name=f"MindAlert_Report_{st.session_state.get('evaluation_id', 0)}.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
+
+else:
+    st.warning("⚠️ El archivo PDF no se encuentra o aún no ha sido generado en el servidor.")
 # ── Mensaje motivacional ───────────────────────────────────────────────────────
 st.markdown(
     "<div style='text-align:center; margin-top:1.5rem; margin-bottom:0.5rem; "

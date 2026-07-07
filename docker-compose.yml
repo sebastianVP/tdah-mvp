@@ -11,6 +11,9 @@ services:
 
     environment:
       DATABASE_URL: postgresql+psycopg://admin:admin123@tdah-db:5432/tdah
+    # ── NUEVA SECCIÓN: Sincroniza los PDFs generados con tu IDE ──
+    volumes:
+      - ./reports:/app/reports
     
     restart: unless-stopped
 

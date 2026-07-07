@@ -46,3 +46,7 @@ Thumbs.db
 
 # Docker volumes (si existieran)
 postgres_data/
+
+# Reportes y Archivos de MindAlert
+reports/
+*.pdf
