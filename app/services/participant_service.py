@@ -1,37 +1,63 @@
 from app.database.db import SessionLocal
 from app.database.models import Participant
 
+
 def save_participant(
-        full_name,
-        email,
-        age,
-        gender
+    full_name,
+    email,
+    age,
+    gender,
+    db=None
 ):
-    db = SessionLocal()
-    
+    """
+    Guarda un participante.
+
+    Si db=None, crea su propia sesión (uso normal desde Streamlit).
+
+    Si recibe una sesión, utiliza esa sesión (uso en pruebas).
+    """
+
+    own_session = False
+
+    if db is None:
+
+        db = SessionLocal()
+
+        own_session = True
+
     try:
-        # 1. Buscar si ya existe
-        existing = db.query(Participant).filter(
-            Participant.email == email
-        ).first()
 
-        if existing:
-            return existing.id  # reutiliza el usuario
+        participant = Participant(
 
-        participant= Participant(
-            full_name = full_name,
-            email     = email,
-            age       = age,
-            gender    = gender,
-            consent   = True
+            full_name=full_name,
+
+            email=email,
+
+            age=age,
+
+            gender=gender,
+
+            consent=True
+
         )
 
         db.add(participant)
-        
-        db.commit()
+
+        # Solo hacemos commit cuando la sesión es propia
+        if own_session:
+
+            db.commit()
+
+        else:
+
+            db.flush()
 
         db.refresh(participant)
 
         return participant.id
+
     finally:
-        db.close()
+
+        if own_session:
+
+            db.close()
