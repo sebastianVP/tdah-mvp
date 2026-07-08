@@ -40,8 +40,9 @@ def db_session():
 
     finally:
 
-        session.close()
-
+        # 1. Primero revertimos los cambios en la base de datos de forma segura
         transaction.rollback()
-
+        
+        # 2. Ahora sí, cerramos los canales de comunicación limpiamente
+        session.close()
         connection.close()
