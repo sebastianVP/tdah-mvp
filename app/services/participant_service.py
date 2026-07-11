@@ -12,6 +12,10 @@ def save_participant(
     """
     Guarda un participante.
 
+    Si el correo ya existe, devuelve el ID del participante existente.
+
+    Si el correo no existe, crea un nuevo participante.
+
     Si db=None, crea su propia sesión (uso normal desde Streamlit).
 
     Si recibe una sesión, utiliza esa sesión (uso en pruebas).
@@ -26,6 +30,19 @@ def save_participant(
         own_session = True
 
     try:
+        # ==========================================================
+        # Verificar si el participante ya existe
+        # ==========================================================
+
+        participant = (
+            db.query(Participant)
+            .filter(Participant.email == email)
+            .first()
+        )
+
+        if participant:
+
+            return participant.id
 
         participant = Participant(
 

@@ -286,29 +286,7 @@ with c4:
 
     )
 st.markdown("<br>", unsafe_allow_html=True)
-'''
-total_participants = get_total_participants()
-total_evaluations  = get_total_evaluations()
-risk_data          = get_risk_distribution()
 
-# Calcular % de riesgo alto si hay datos
-pct_alto = 0
-if risk_data:
-    df_risk_raw = pd.DataFrame(risk_data, columns=["Riesgo", "Cantidad"])
-    total_eval_count = df_risk_raw["Cantidad"].sum()
-    alto_row = df_risk_raw[df_risk_raw["Riesgo"] == "Alto"]["Cantidad"]
-    pct_alto = int(round(alto_row.values[0] / total_eval_count * 100)) if not alto_row.empty and total_eval_count > 0 else 0
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Participantes", total_participants)
-with col2:
-    st.metric("Evaluaciones realizadas", total_evaluations)
-with col3:
-    st.metric("Riesgo alto", f"{pct_alto}%")
-
-st.markdown("<br>", unsafe_allow_html=True)
-'''
 # ── Risk distribution ──────────────────────────────────────────────────────────
 risk_data = get_risk_distribution()
 
