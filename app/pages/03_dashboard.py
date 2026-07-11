@@ -1,13 +1,32 @@
 import streamlit as st
 import pandas as pd
 
-from app.services.statistics_service import (
+from app.services.dashboard_service import (
     get_total_participants,
     get_total_evaluations,
+    get_average_age,
+    get_high_risk_percentage,
     get_risk_distribution,
     get_gender_distribution,
     get_age_distribution,
+    get_daily_evaluations,
 )
+
+from app.utils.charts import (
+    plot_risk_distribution,
+    plot_gender_distribution,
+    plot_age_distribution,
+    plot_daily_evaluations,
+)
+
+
+#from app.services.statistics_service import (
+#    get_total_participants,
+#    get_total_evaluations,
+#    get_risk_distribution,
+#    get_gender_distribution,
+#    get_age_distribution,
+#)
 
 st.set_page_config(
     page_title="Dashboard - MindAlert",
@@ -128,17 +147,146 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Header ─────────────────────────────────────────────────────────────────────
-st.markdown(
-    "<div style='display:flex; align-items:center; justify-content:space-between; "
-    "padding: 0.5rem 0 1.75rem;'>"
-    "<span style='font-size:1.05rem; font-weight:700; color:#A29BFE;'>🧠 MindAlert</span>"
-    "<span style='font-size:0.75rem; font-weight:700; text-transform:uppercase; "
-    "letter-spacing:1.2px; color:rgba(255,255,255,0.25);'>Panel administrativo</span>"
-    "</div>",
-    unsafe_allow_html=True,
-)
+header_left, header_center,  header_right = st.columns([5,1, 1])
+with header_left:
+    st.markdown(
+    """
+    <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    ">
+
+    <div>
+
+    <h1 style="margin-bottom:0;">
+    🧠 MindAlert
+    </h1>
+
+    <p style="
+    color:#A0AEC0;
+    margin-top:5px;
+    font-size:16px;
+    ">
+
+    Dashboard Inteligente de Analítica
+
+    </p>
+
+    </div>
+
+    <div style="text-align:right;">
+
+    <h4 style="margin-bottom:0;">
+    Panel Administrativo
+    </h4>
+
+    <p style="
+    color:#6C5CE7;
+    font-size:14px;
+    ">
+
+    Versión MVP
+
+    </p>
+
+    </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+
+with header_center:
+
+    if st.button("🔄 Actualizar", use_container_width=True):
+
+        st.rerun()
+
+with header_right:
+
+    if st.button("🏠 Inicio", use_container_width=True):
+
+        # Limpiar el estado de la sesión
+
+        for key in [
+
+            "evaluation_saved",
+            "evaluation_id",
+            "score",
+            "risk",
+            "responses",
+            "name",
+            "email",
+            "age",
+            "gender",
+            "current_index",
+            "answers_map"
+
+        ]:
+
+            st.session_state.pop(key, None)
+
+        st.switch_page("main.py")
+
+#st.markdown(
+#    "<div style='display:flex; align-items:center; justify-content:space-between; "
+#    "padding: 0.5rem 0 1.75rem;'>"
+#    "<span style='font-size:1.05rem; font-weight:700; color:#A29BFE;'>🧠 MindAlert</span>"
+#    "<span style='font-size:0.75rem; font-weight:700; text-transform:uppercase; "
+#    "letter-spacing:1.2px; color:rgba(255,255,255,0.25);'>Panel administrativo</span>"
+#    "</div>",
+#    unsafe_allow_html=True,
+#) 
 
 # ── KPI metrics ────────────────────────────────────────────────────────────────
+total_participants = get_total_participants()
+
+total_evaluations = get_total_evaluations()
+
+average_age = get_average_age()
+
+high_risk = get_high_risk_percentage()
+c1,c2,c3,c4 = st.columns(4)
+with c1:
+
+    st.metric(
+
+        "👥 Participantes",
+
+        total_participants
+
+    )
+with c2:
+
+    st.metric(
+
+        "📋 Evaluaciones",
+
+        total_evaluations
+
+    )
+with c3:
+
+    st.metric(
+
+        "🎂 Edad promedio",
+
+        average_age
+
+    )
+with c4:
+
+    st.metric(
+
+        "⚠ Riesgo Alto",
+
+        f"{high_risk}%"
+
+    )
+st.markdown("<br>", unsafe_allow_html=True)
+'''
 total_participants = get_total_participants()
 total_evaluations  = get_total_evaluations()
 risk_data          = get_risk_distribution()
@@ -160,8 +308,118 @@ with col3:
     st.metric("Riesgo alto", f"{pct_alto}%")
 
 st.markdown("<br>", unsafe_allow_html=True)
-
+'''
 # ── Risk distribution ──────────────────────────────────────────────────────────
+risk_data = get_risk_distribution()
+
+gender_data = get_gender_distribution()
+
+age_data = get_age_distribution()
+
+daily_data = get_daily_evaluations()
+
+df_risk = pd.DataFrame(
+
+    risk_data,
+
+    columns=[
+
+        "Riesgo",
+
+        "Cantidad"
+
+    ]
+
+)
+
+df_gender = pd.DataFrame(
+
+    gender_data,
+
+    columns=[
+
+        "Sexo",
+
+        "Cantidad"
+
+    ]
+
+)
+
+df_age = pd.DataFrame(
+
+    age_data.items(),
+
+    columns=[
+
+        "Rango",
+
+        "Cantidad"
+
+    ]
+
+)
+
+df_daily = pd.DataFrame(
+
+    daily_data,
+
+    columns=[
+
+        "Fecha",
+
+        "Cantidad"
+
+    ]
+
+)
+
+left,right = st.columns(2)
+
+with left:
+
+    fig = plot_risk_distribution(df_risk)
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+
+    fig = plot_age_distribution(df_age)
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+
+with right:
+
+    fig = plot_gender_distribution(df_gender)
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+
+    fig = plot_daily_evaluations(df_daily)
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+
+    )
+'''
 st.markdown('<div class="section-card">', unsafe_allow_html=True)
 st.markdown('<p class="section-title">Distribución de riesgo</p>', unsafe_allow_html=True)
 
@@ -261,3 +519,4 @@ if st.button("← Volver al inicio"):
                 "current_index", "answers_map"]:
         st.session_state.pop(key, None)
     st.switch_page("main.py")
+'''
