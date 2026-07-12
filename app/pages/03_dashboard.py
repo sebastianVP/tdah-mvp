@@ -22,6 +22,7 @@ from app.utils.charts import (
     plot_daily_evaluations,
 )
 
+from app.services.security_service import require_admin
 
 #from app.services.statistics_service import (
 #    get_total_participants,
@@ -37,6 +38,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+require_admin()
 
 st.markdown("""
 <style>
