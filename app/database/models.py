@@ -70,3 +70,46 @@ class Participant(Base):
         Boolean,
         default = False
     )
+
+class Administrator(Base):
+
+    __tablename__ = "administrators"
+
+    id = Column(
+        Integer,
+        primary_key=True
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    full_name = Column(
+        String,
+        nullable=False
+    )
+
+    username = Column(
+        String,
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    email = Column(
+        String,
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    password_hash = Column(
+        String,
+        nullable=False
+    )
+
+    is_active = Column(
+        Boolean,
+        default=True
+    )
