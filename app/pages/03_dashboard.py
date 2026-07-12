@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+from io import BytesIO
+
 from app.services.dashboard_service import (
     get_total_participants,
     get_total_evaluations,
@@ -10,6 +12,7 @@ from app.services.dashboard_service import (
     get_gender_distribution,
     get_age_distribution,
     get_daily_evaluations,
+    get_dashboard_table,
 )
 
 from app.utils.charts import (
@@ -352,6 +355,8 @@ df_daily = pd.DataFrame(
 
 )
 
+dashboard_df = get_dashboard_table()
+
 left,right = st.columns(2)
 
 with left:
@@ -397,3 +402,155 @@ with right:
         use_container_width=True
 
     )
+
+st.markdown("---")
+
+st.subheader("🔍 Buscar participante")
+
+texto = st.text_input(
+
+    "Nombre o correo",
+
+    placeholder="Escriba un nombre..."
+
+)
+
+if texto:
+
+    dashboard_df = dashboard_df[
+
+        dashboard_df["Nombre"]
+
+        .str.contains(
+
+            texto,
+
+            case=False,
+
+            na=False
+
+        )
+
+        |
+
+        dashboard_df["Correo"]
+
+        .str.contains(
+
+            texto,
+
+            case=False,
+
+            na=False
+
+        )
+
+    ]
+
+st.subheader("📋 Historial de Evaluaciones")
+
+st.dataframe(
+
+    dashboard_df,
+
+    use_container_width=True,
+
+    hide_index=True
+
+)
+
+csv = dashboard_df.to_csv(
+
+    index=False
+
+).encode("utf-8")
+
+st.download_button(
+
+    "📄 Descargar CSV",
+
+    csv,
+
+    "evaluaciones.csv",
+
+    "text/csv"
+
+)
+
+buffer = BytesIO()
+
+with pd.ExcelWriter(
+
+    buffer,
+
+    engine="openpyxl"
+
+) as writer:
+
+    dashboard_df.to_excel(
+
+        writer,
+
+        index=False,
+
+        sheet_name="Evaluaciones"
+
+    )
+
+st.download_button(
+
+    "📊 Descargar Excel",
+
+    data=buffer.getvalue(),
+
+    file_name="evaluaciones.xlsx",
+
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+)
+
+st.markdown("---")
+
+st.subheader("📈 Métricas de Uso")
+
+m1, m2, m3 = st.columns(3)
+
+with m1:
+
+    st.metric(
+
+        "Evaluaciones registradas",
+
+        len(dashboard_df)
+
+    )
+
+with m2:
+
+    if not dashboard_df.empty:
+
+        st.metric(
+
+            "Última evaluación",
+
+            dashboard_df.iloc[0]["Fecha"].strftime("%d/%m/%Y")
+
+        )
+
+with m3:
+
+    if not dashboard_df.empty:
+
+        st.metric(
+
+            "Edad media",
+
+            round(
+
+                dashboard_df["Edad"].mean(),
+
+                1
+
+            )
+
+        )

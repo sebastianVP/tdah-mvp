@@ -492,3 +492,77 @@ def get_recent_activity(limit=10):
     finally:
 
         db.close()
+
+def get_dashboard_table():
+
+    db = SessionLocal()
+
+    try:
+
+        query = (
+
+            db.query(
+
+                Evaluation.created_at,
+
+                Participant.full_name,
+
+                Participant.email,
+
+                Participant.gender,
+
+                Participant.age,
+
+                Evaluation.score,
+
+                Evaluation.probability_level,
+
+            )
+
+            .join(
+
+                Participant,
+
+                Participant.id == Evaluation.participant_id
+
+            )
+
+            .order_by(
+
+                Evaluation.created_at.desc()
+
+            )
+
+        )
+
+        rows = query.all()
+
+        df = pd.DataFrame(
+
+            rows,
+
+            columns=[
+
+                "Fecha",
+
+                "Nombre",
+
+                "Correo",
+
+                "Sexo",
+
+                "Edad",
+
+                "Puntaje",
+
+                "Riesgo"
+
+            ]
+
+        )
+
+        return df
+
+    finally:
+
+        db.close()
