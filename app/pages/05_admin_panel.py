@@ -156,7 +156,11 @@ Base de datos
 
     ):
 
-        st.info("Disponible en Sprint 9")
+        st.switch_page(
+
+            "pages/06_participants.py"
+
+        )
 
 with col3:
 
