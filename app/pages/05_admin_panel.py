@@ -196,7 +196,11 @@ Resultados
 
     ):
 
-        st.info("Disponible en Sprint 9")
+        st.switch_page(
+
+            "pages/07_evaluations.py"
+
+        )
 
 with col4:
 
