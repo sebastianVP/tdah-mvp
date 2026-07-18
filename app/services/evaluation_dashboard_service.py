@@ -8,6 +8,8 @@ from app.services.pdf_service import generate_pdf
 
 from app.services.email_service import send_result_email
 
+import os
+
 # ==========================================================
 # TOTAL DE EVALUACIONES
 # ==========================================================
@@ -553,27 +555,36 @@ def regenerate_pdf(evaluation_id):
         responses
     ) = data
 
-    pdf_path = generate_pdf(
 
-        full_name=full_name,
+
+    filename = f"evaluation_{evaluation_id}.pdf"
+
+    generate_pdf(
+        filename=filename,
+
+        participant=full_name,
+
+        email=email,
 
         age=age,
 
         gender=gender,
 
-        email=email,
-
         score=score,
-
-        max_score=max_score,
 
         risk=risk,
 
-        responses=responses
+        evaluation_id=evaluation_id
 
     )
 
-    return pdf_path
+    return os.path.join(
+
+        "reports",
+
+        filename
+
+    )
 
 # ==========================================================
 # REENVIAR CORREO
@@ -581,15 +592,25 @@ def regenerate_pdf(evaluation_id):
 
 def resend_email(evaluation_id):
 
-    pdf_path = regenerate_pdf(evaluation_id)
-
-    data = get_email_data(evaluation_id)
+    data = get_pdf_data(evaluation_id)
 
     if data is None:
 
-        return False
+        return
 
-    email, full_name, score, risk = data
+    (
+        full_name,
+        email,
+        age,
+        gender,
+        score,
+        max_score,
+        risk,
+        responses
+
+    ) = data
+
+    pdf_path = regenerate_pdf(evaluation_id)
 
     send_result_email(
 
@@ -599,7 +620,9 @@ def resend_email(evaluation_id):
 
         risk=risk,
 
-        pdf_path=pdf_path
+        pdf_path=pdf_path,
+
+        evaluation_id=evaluation_id
 
     )
 
