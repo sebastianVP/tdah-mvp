@@ -1,6 +1,8 @@
 from datetime import datetime
 import os
 
+from app.services.settings_service import get_setting
+
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import (
@@ -27,6 +29,30 @@ from reportlab.platypus import (
 # =====================================================
 
 REPORTS_DIR = "reports"
+
+
+APP_NAME = get_setting("app_name") or "MindAlert"
+
+APP_VERSION = get_setting("app_version") or "1.0"
+
+APP_INSTITUTION = get_setting("app_institution") or ""
+
+PDF_TITLE = get_setting("pdf_title") or "Evaluación Preliminar de TDAH"
+
+PDF_FOOTER = get_setting("pdf_footer") or "©2026 MindAlert"
+
+PDF_WEBSITE = get_setting("app_website") or "https://mindalert.app"
+
+PDF_LEGAL = get_setting(
+
+    "pdf_legal"
+
+) or """Este reporte fue generado automáticamente por MindAlert.
+
+La presente evaluación constituye únicamente una herramienta de tamizaje y no reemplaza una valoración clínica realizada por un profesional de la salud.
+
+Ante cualquier duda consulte con un especialista."""
+
 
 os.makedirs(
     REPORTS_DIR,
@@ -166,7 +192,7 @@ def generate_pdf(
     story.append(
 
         Paragraph(
-            "MindAlert",
+            APP_NAME,
             TITLE_STYLE
         )
 
@@ -175,11 +201,24 @@ def generate_pdf(
     story.append(
 
         Paragraph(
-            "Evaluación Preliminar de TDAH",
+            PDF_TITLE,
             SUBTITLE_STYLE
         )
 
     )
+
+
+    if APP_INSTITUTION:
+
+        story.append(
+
+            Paragraph(
+
+                APP_INSTITUTION,
+                NORMAL_STYLE
+            )
+
+        )
 
     story.append(
 
@@ -554,7 +593,7 @@ def generate_pdf(
 
         Paragraph(
 
-            legal,
+            PDF_LEGAL,
 
             NORMAL_STYLE
 
@@ -570,7 +609,7 @@ def generate_pdf(
 
         Paragraph(
 
-            "© 2026 MindAlert - Todos los derechos reservados.",
+            PDF_FOOTER,
 
             FOOTER_STYLE
 
