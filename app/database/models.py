@@ -113,3 +113,63 @@ class Administrator(Base):
         Boolean,
         default=True
     )
+
+# ==========================================================
+# SETTINGS
+# ==========================================================
+
+class Setting(Base):
+
+    __tablename__ = "settings"
+
+    id = Column(
+
+        Integer,
+
+        primary_key=True
+
+    )
+
+    key = Column(
+
+        String(120),
+
+        unique=True,
+
+        nullable=False,
+
+        index=True
+
+    )
+
+    value = Column(
+
+        String,
+
+        nullable=False
+
+    )
+
+    description = Column(
+
+        String
+
+    )
+
+    created_at = Column(
+
+        DateTime,
+
+        default=datetime.utcnow
+
+    )
+
+    updated_at = Column(
+
+        DateTime,
+
+        default=datetime.utcnow,
+
+        onupdate=datetime.utcnow
+
+    )

@@ -1,27 +1,56 @@
 import os
 import smtplib
-
-#from email.mime.text import MIMEText
-
-from email.message import EmailMessage
-from pathlib import Path
 import mimetypes
 
+from pathlib import Path
+from email.message import EmailMessage
 
 from dotenv import load_dotenv
 
+from app.services.settings_service import get_setting
+
 load_dotenv()
 
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+# ======================================================
+# CONFIGURACIÓN (FALLBACK)
+# ======================================================
 
+EMAIL_USER_ENV = os.getenv("EMAIL_USER")
+
+EMAIL_PASSWORD_ENV = os.getenv("EMAIL_PASSWORD")
+
+# ======================================================
+# CONFIGURACIÓN DESDE SETTINGS
+# ======================================================
+
+SMTP_SERVER = get_setting("smtp_server") or "smtp.gmail.com"
+
+SMTP_PORT = int(
+
+    get_setting("smtp_port") or 465
+
+)
+
+EMAIL_USER = get_setting("smtp_email") or EMAIL_USER_ENV
+
+EMAIL_PASSWORD = get_setting("smtp_password") or EMAIL_PASSWORD_ENV
+
+# ======================================================
+# ENVÍO DE CORREO
+# ======================================================
 
 def send_result_email(
+
     recipient,
+
     score,
+
     risk,
+
     pdf_path,
+
     evaluation_id
+
 ):
 
     subject = "Resultado de tu evaluación MindAlert"
@@ -31,7 +60,7 @@ Hola,
 
 Gracias por utilizar MindAlert.
 
-Resultado obtenido:
+Resultado obtenido
 
 Puntaje: {score}
 
@@ -42,21 +71,18 @@ Este resultado es únicamente orientativo y no constituye un diagnóstico médic
 Equipo MindAlert
 """
 
-    #msg = MIMEText(body)
-
-    #msg["Subject"] = subject
-    #msg["From"] = EMAIL_USER
-    #msg["To"] = recipient
     msg = EmailMessage()
 
     msg["Subject"] = subject
+
     msg["From"] = EMAIL_USER
+
     msg["To"] = recipient
 
     msg.set_content(body)
 
     # ======================================================
-    # Adjuntar Reporte PDF
+    # Adjuntar PDF
     # ======================================================
 
     pdf_file = Path(pdf_path)
@@ -64,6 +90,7 @@ Equipo MindAlert
     mime_type, _ = mimetypes.guess_type(pdf_file)
 
     if mime_type is None:
+
         mime_type = "application/pdf"
 
     maintype, subtype = mime_type.split("/", 1)
@@ -82,14 +109,24 @@ Equipo MindAlert
 
         )
 
+    # ======================================================
+    # Enviar
+    # ======================================================
+
     with smtplib.SMTP_SSL(
-        "smtp.gmail.com",
-        465
+
+        SMTP_SERVER,
+
+        SMTP_PORT
+
     ) as server:
 
         server.login(
+
             EMAIL_USER,
+
             EMAIL_PASSWORD
+
         )
 
         server.send_message(msg)
