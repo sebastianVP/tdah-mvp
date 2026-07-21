@@ -8,6 +8,8 @@ from app.services.settings_service import (
     get_all_settings,
     search_settings,
     update_setting,
+    create_setting,
+    delete_setting
 )
 
 # ==========================================================
@@ -41,6 +43,68 @@ st.caption(
 st.divider()
 
 # ==========================================================
+# NUEVA CONFIGURACIÓN
+# ==========================================================
+
+st.subheader("➕ Nueva configuración")
+
+with st.expander("Crear nueva configuración"):
+
+    with st.form("new_setting"):
+
+        new_key = st.text_input(
+
+            "Clave"
+
+        )
+
+        new_value = st.text_input(
+
+            "Valor"
+
+        )
+
+        new_description = st.text_input(
+
+            "Descripción"
+
+        )
+
+        create = st.form_submit_button(
+
+            "Crear configuración",
+
+            use_container_width=True
+
+        )
+
+        if create:
+
+            if new_key.strip() == "":
+
+                st.warning("Debe ingresar una clave.")
+
+            else:
+
+                create_setting(
+
+                    new_key,
+
+                    new_value,
+
+                    new_description
+
+                )
+
+                st.success(
+
+                    "Configuración creada correctamente."
+
+                )
+
+                st.rerun()
+
+# ==========================================================
 # BUSCADOR
 # ==========================================================
 
@@ -51,6 +115,9 @@ search = st.text_input(
     placeholder="Ejemplo: smtp"
 
 )
+
+
+
 
 # ==========================================================
 # CARGAR CONFIGURACIONES
