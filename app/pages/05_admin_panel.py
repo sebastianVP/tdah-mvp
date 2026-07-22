@@ -236,7 +236,11 @@ Sistema
 
     ):
 
-        st.info("Disponible en Sprint 9")
+        st.switch_page(
+
+            "pages/08_settings.py"
+
+        )
 
 st.divider()
 
