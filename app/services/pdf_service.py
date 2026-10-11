@@ -621,7 +621,7 @@ def generate_pdf(
 
         Paragraph(
 
-            "https://mindalert.app",
+            PDF_WEBSITE,
 
             FOOTER_STYLE
 
