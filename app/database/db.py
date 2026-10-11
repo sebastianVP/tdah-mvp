@@ -25,3 +25,5 @@ SessionLocal = sessionmaker(
 )
 
 print("✅ Conexión configurada correctamente")
+
+
